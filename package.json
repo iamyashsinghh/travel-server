@@ -9,13 +9,20 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@iconify-json/solar": "^1.2.2",
+    "@iconify/react": "^5.2.0",
+    "@prisma/client": "^6.3.1",
+    "bcrypt": "^5.1.1",
+    "bootstrap": "^5.3.3",
+    "next": "15.1.6",
+    "next-auth": "^4.24.11",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "next": "15.1.6"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
-    "@eslint/eslintrc": "^3"
+    "prisma": "^6.3.1"
   }
 }
