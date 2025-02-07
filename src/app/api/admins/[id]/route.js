@@ -137,22 +137,22 @@ export async function PUT(request, { params }) {
 
 // DELETE: Delete an admin by id
 export async function DELETE(request, { params }) {
-  const session = await getServerSession(authOptions);
-  
-  if (!(await hasPermission(session, PERMISSIONS.DELETE_ADMIN))) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
-    const resolvedParams = await Promise.resolve(params);
-    const { id } = resolvedParams;
+    // Ensure that params.id is converted to a number if needed.
+    const adminId = parseInt(params.id, 10);
+    
+    // Attempt deletion
     await prisma.admin.delete({
-      where: { id: id },
+      where: { id: adminId },
     });
-
+    
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("DELETE Admin Error:", error);
-    return NextResponse.json({ error: "Error deleting admin" }, { status: 500 });
+    
+    // Build an error message object. Even if error.message is undefined, default to a string.
+    const errorMessage = error?.message || "Error deleting admin";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
+

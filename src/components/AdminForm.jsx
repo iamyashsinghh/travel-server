@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import permissions from "@/permissions.json";
@@ -7,19 +7,32 @@ import roles from "@/roles.json";
 
 const AdminForm = ({ admin }) => {
   const router = useRouter();
+
+  // Initialize the form with default values.
+  // For permissions, use the permission codes from admin.permissions.
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      name: admin?.name || "",
+      email: admin?.email || "",
+      role: admin?.role || "",
+      permissions: admin ? admin.permissions.map((p) => p.name) : [],
+      password: "",
+    },
+  });
 
+  // Update form values when the admin prop changes.
   useEffect(() => {
     if (admin) {
       setValue("name", admin.name);
       setValue("email", admin.email);
       setValue("role", admin.role);
-      setValue("permissions", admin.permissions.map((p) => p.id));
+      // Set permissions using the permission codes (stored in admin.permissions.name)
+      setValue("permissions", admin.permissions.map((p) => p.name));
     }
   }, [admin, setValue]);
 
@@ -52,7 +65,9 @@ const AdminForm = ({ admin }) => {
             {...register("name", { required: true })}
             className={`form-control ${errors.name ? "is-invalid" : ""}`}
           />
-          {errors.name && <div className="invalid-feedback">Name is required</div>}
+          {errors.name && (
+            <div className="invalid-feedback">Name is required</div>
+          )}
         </div>
 
         {/* Email Field */}
@@ -63,10 +78,12 @@ const AdminForm = ({ admin }) => {
             {...register("email", { required: true })}
             className={`form-control ${errors.email ? "is-invalid" : ""}`}
           />
-          {errors.email && <div className="invalid-feedback">Valid email is required</div>}
+          {errors.email && (
+            <div className="invalid-feedback">Valid email is required</div>
+          )}
         </div>
 
-        {/* Role Selection (Dynamic from roles.json) */}
+        {/* Role Selection */}
         <div className="mb-3">
           <label className="form-label">Role</label>
           <select
@@ -79,29 +96,46 @@ const AdminForm = ({ admin }) => {
               </option>
             ))}
           </select>
-          {errors.role && <div className="invalid-feedback">Role is required</div>}
+          {errors.role && (
+            <div className="invalid-feedback">Role is required</div>
+          )}
         </div>
 
-        {/* Permissions (Dynamic from permissions.json) */}
+        {/* Permissions */}
         <div className="mb-3">
           <label className="form-label">Permissions</label>
           <div className="row">
-            {permissions.map((perm) => (
-              <div className="col-md-4" key={perm.id}>
-                <div className="form-check">
-                  <input
-                    type="checkbox"
-                    value={perm.id}
-                    {...register("permissions")}
-                    className="form-check-input"
-                    id={perm.id}
-                  />
-                  <label className="form-check-label" htmlFor={perm.id}>
-                    {perm.name}
-                  </label>
+            {permissions.map((perm) => {
+              // perm.id is the permission code from permissions.json (e.g., "admin.manage")
+              const permCode = perm.id;
+              return (
+                <div className="col-md-4" key={permCode}>
+                  <div className="form-check">
+                    <input
+                      type="checkbox"
+                      value={permCode}
+                      {...register("permissions")}
+                      className="form-check-input"
+                      id={`perm-${permCode}`}
+                      // If editing an admin, check if the permission exists in admin.permissions (by code)
+                      defaultChecked={
+                        admin
+                          ? admin.permissions.some(
+                              (p) => p.name === permCode
+                            )
+                          : false
+                      }
+                    />
+                    <label
+                      className="form-check-label"
+                      htmlFor={`perm-${permCode}`}
+                    >
+                      {perm.name}
+                    </label>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -111,10 +145,12 @@ const AdminForm = ({ admin }) => {
             <label className="form-label">Password</label>
             <input
               type="password"
-              {...register("password", { required: !admin })}
+              {...register("password", { required: true })}
               className={`form-control ${errors.password ? "is-invalid" : ""}`}
             />
-            {errors.password && <div className="invalid-feedback">Password is required</div>}
+            {errors.password && (
+              <div className="invalid-feedback">Password is required</div>
+            )}
           </div>
         )}
 
