@@ -1,11 +1,9 @@
 "use client";
-
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
-
 
 const Login = () => {
   const router = useRouter();

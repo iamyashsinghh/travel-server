@@ -1,0 +1,14 @@
+[
+    {
+      "id": "admin.manage",
+      "name": "Manage Admins"
+    },
+    {
+      "id": "admin.update",
+      "name": "Update Admin"
+    },
+    {
+      "id": "admin.delete",
+      "name": "Delete Admin"
+    }
+]

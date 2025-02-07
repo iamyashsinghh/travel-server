@@ -15542,6 +15542,9 @@ td.fc-header-center {
   display: inline-block;
 }
 
+.sidebar-menu li{
+  margin: 3px 0;
+}
 .sidebar-menu li.dropdown > a {
   position: relative;
 }
