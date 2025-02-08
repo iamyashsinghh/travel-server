@@ -4,21 +4,26 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { requireAllAdminAuth } from "@/lib/permissions";
-import bcrypt from "bcrypt"; 
+import bcrypt from "bcryptjs"; 
 
 export async function GET() {
   const session = await getServerSession(authOptions);
 
-  // Check if the user has permission to read admins
+  // Ensure the user is authorized
   if (!(await requireAllAdminAuth(["admin.manage"]))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
+    // Fetch admins including their permissions
     const admins = await prisma.admin.findMany({
       include: { permissions: true },
     });
-    return NextResponse.json(admins);
+
+    // Remove the password property from each admin object
+    const adminsWithoutPassword = admins.map(({ password, ...adminWithoutPassword }) => adminWithoutPassword);
+
+    return NextResponse.json(adminsWithoutPassword);
   } catch (error) {
     console.error("GET Admins Error:", error.message, error.stack);
     return NextResponse.json(
@@ -31,7 +36,6 @@ export async function GET() {
 export async function POST(request) {
   const session = await getServerSession(authOptions);
 
-  // Check if the user has permission to create admins
   if (!(await requireAllAdminAuth(["admin.manage"]))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

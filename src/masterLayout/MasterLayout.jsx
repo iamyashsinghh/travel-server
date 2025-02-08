@@ -5,12 +5,16 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
+import { useMyContext } from "@/app/context/MyContext";
 
 const MasterLayout = ({ children }) => {
   const pathname = usePathname();
   const [sidebarActive, setSidebarActive] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const location = usePathname();
+  const { adminData } = useMyContext();
+
+  console.log("adminData:", adminData);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -72,7 +76,7 @@ const MasterLayout = ({ children }) => {
     // Open the submenu that contains the active route
     openActiveDropdown();
 
-    // Cleanup
+    // Cleanup listeners on unmount
     return () => {
       dropdownTriggers.forEach((trigger) => {
         trigger.removeEventListener("click", handleDropdownClick);
@@ -114,7 +118,6 @@ const MasterLayout = ({ children }) => {
         </button>
         <div>
           <Link href="/" className="sidebar-logo">
-            {/* Logo images with fixed paths and dimensions */}
             <Image
               src="/assets/images/logo.png"
               alt="site logo"
@@ -152,26 +155,24 @@ const MasterLayout = ({ children }) => {
                 <span>Dashboard</span>
               </Link>
             </li>
-            {/* Invoice Dropdown */}
+            {/* Admin Dropdown */}
             <li className="dropdown">
               <Link href="#">
-              <i className='ri-user-settings-line' />
-              <span>Admin</span>
+                <i className="ri-user-settings-line" />
+                <span>Admin</span>
               </Link>
               <ul className="sidebar-submenu">
                 <li>
                   <Link
                     href="/admins"
-                    className={
-                      pathname === "/admins" ? "active-page" : ""
-                    }
+                    className={pathname === "/admins" ? "active-page" : ""}
                   >
                     <i className="ri-circle-fill circle-icon text-primary-600 w-auto" />{" "}
                     List
                   </Link>
                 </li>
               </ul>
-            </li>{" "}
+            </li>
           </ul>
         </div>
       </aside>
@@ -267,7 +268,7 @@ const MasterLayout = ({ children }) => {
                           </span>
                         </div>
                       </Link>
-                      {/* Add additional message items similarly */}
+                      {/* Additional message items... */}
                     </div>
                     <div className="text-center py-12 px-16">
                       <Link
@@ -327,7 +328,7 @@ const MasterLayout = ({ children }) => {
                           23 Mins ago
                         </span>
                       </Link>
-                      {/* Add additional notification items similarly */}
+                      {/* Additional notification items... */}
                     </div>
                     <div className="text-center py-12 px-16">
                       <Link
@@ -358,10 +359,10 @@ const MasterLayout = ({ children }) => {
                     <div className="py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2">
                       <div>
                         <h6 className="text-lg text-primary-light fw-semibold mb-2">
-                          Shaidul Islam
+                        {adminData?.length ? adminData[0].name : "Loading..."}
                         </h6>
                         <span className="text-secondary-light fw-medium text-sm">
-                          Admin
+                          {adminData?.length ? adminData[0].role : "Admin"}
                         </span>
                       </div>
                       <button type="button" className="hover-text-danger">
@@ -427,7 +428,7 @@ const MasterLayout = ({ children }) => {
           </div>
         </div>
 
-        {/* Main content */}
+        {/* Main Content */}
         <div className="dashboard-main-body">{children}</div>
 
         {/* Footer */}
