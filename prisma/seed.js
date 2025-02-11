@@ -11,11 +11,9 @@ async function main() {
       password: hashedPassword,
       name: "Super Admin",
       role: "superadmin",
-      permissions: {  // Use nested create for relational data
+      permissions: {
         create: [
-          { name: "dashboard.access" },
-          { name: "user.manage" },
-          { name: "settings.edit" }
+          { name: "admin.manage" },
         ]
       }
     }

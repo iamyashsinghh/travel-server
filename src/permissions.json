@@ -4,11 +4,15 @@
       "name": "Manage Admins"
     },
     {
-      "id": "admin.update",
-      "name": "Update Admin"
-    },
-    {
       "id": "admin.delete",
       "name": "Delete Admin"
+    },
+    {
+      "id": "users.manage",
+      "name": "Manage Users"
+    },
+    {
+      "id": "users.delete",
+      "name": "Delete Users"
     }
 ]

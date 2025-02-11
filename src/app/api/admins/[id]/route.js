@@ -1,16 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth/next"; // use this import in App Router
+import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
-// Define required permissions for each action
 const PERMISSIONS = {
-  READ_ADMIN: "admin.manage",     // Permission for fetching admin details
-  UPDATE_ADMIN: "admin.update",   // Permission for updating admin details
-  DELETE_ADMIN: "admin.delete",   // Permission for deleting admin
+  MANAGE_ADMIN: "admin.manage",
+  DELETE_ADMIN: "admin.delete",
 };
 
-// Helper function to check if a user has the required permission
 async function hasPermission(session, requiredPermission) {
   if (!session || !session.user) return false;
   // Superadmin has full access
@@ -26,11 +23,10 @@ async function hasPermission(session, requiredPermission) {
   return userPermissions.includes(requiredPermission);
 }
 
-// GET: Fetch an admin by id
 export async function GET(request, { params }) {
   const session = await getServerSession(authOptions);
-  
-  if (!(await hasPermission(session, PERMISSIONS.READ_ADMIN))) {
+
+  if (!(await hasPermission(session, PERMISSIONS.MANAGE_ADMIN))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -54,12 +50,11 @@ export async function GET(request, { params }) {
   }
 }
 
-// PUT: Update an admin by id
 export async function PUT(request, { params }) {
   const session = await getServerSession(authOptions);
   console.log('hit')
-  
-  if (!(await hasPermission(session, PERMISSIONS.UPDATE_ADMIN))) {
+
+  if (!(await hasPermission(session, PERMISSIONS.MANAGE_ADMIN))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -68,12 +63,10 @@ export async function PUT(request, { params }) {
     const data = await request.json();
     console.log("PUT data received:", data);
 
-    // Validate request body
     if (!data || typeof data !== "object") {
       return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
     }
 
-    // Check required fields
     const requiredFields = ['name', 'email', 'role'];
     for (const field of requiredFields) {
       if (!data[field]) {
@@ -81,15 +74,11 @@ export async function PUT(request, { params }) {
       }
     }
 
-    // Ensure permissions is an array
     const permissions = Array.isArray(data.permissions) ? data.permissions : [];
 
-    // Convert the admin id to an integer (based on your SQL schema)
     const adminId = parseInt(id, 10);
 
-    // Use a transaction to update admin details and replace permissions
     const updatedAdmin = await prisma.$transaction(async (tx) => {
-      // Update the admin's basic fields
       await tx.admin.update({
         where: { id: adminId },
         data: {
@@ -99,12 +88,10 @@ export async function PUT(request, { params }) {
         },
       });
 
-      // Remove all existing permissions for this admin
       await tx.permission.deleteMany({
         where: { adminId },
       });
 
-      // Create new permissions records for each permission name provided
       if (permissions.length > 0) {
         await Promise.all(
           permissions.map((permName) =>
@@ -118,7 +105,6 @@ export async function PUT(request, { params }) {
         );
       }
 
-      // Return the updated admin along with its permissions
       return tx.admin.findUnique({
         where: { id: adminId },
         include: { permissions: true },
@@ -135,22 +121,18 @@ export async function PUT(request, { params }) {
   }
 }
 
-// DELETE: Delete an admin by id
 export async function DELETE(request, { params }) {
   try {
-    // Ensure that params.id is converted to a number if needed.
+    if (!(await requireAllAdminAuth(["admin.delete"]))) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const adminId = parseInt(params.id, 10);
-    
-    // Attempt deletion
     await prisma.admin.delete({
       where: { id: adminId },
     });
-    
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("DELETE Admin Error:", error);
-    
-    // Build an error message object. Even if error.message is undefined, default to a string.
     const errorMessage = error?.message || "Error deleting admin";
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
