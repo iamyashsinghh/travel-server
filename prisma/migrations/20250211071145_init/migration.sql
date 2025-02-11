@@ -1,4 +1,28 @@
 -- CreateTable
+CREATE TABLE `admin` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `email` VARCHAR(191) NOT NULL,
+    `password` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `role` VARCHAR(191) NOT NULL DEFAULT 'admin',
+    `created_at` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
+    `updated_at` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
+
+    UNIQUE INDEX `Admin_email_key`(`email`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `permission` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(191) NOT NULL,
+    `adminId` INTEGER NOT NULL,
+
+    INDEX `Permission_adminId_fkey`(`adminId`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `otps` (
     `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
     `user_id` INTEGER UNSIGNED NOT NULL,
