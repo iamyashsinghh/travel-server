@@ -184,6 +184,18 @@ const MasterLayout = ({ children }) => {
                 />
                 <span>Users</span>
               </Link>
+            </li>
+            <li>
+              <Link
+                href="/drivers"
+                className={pathname === "/drivers" ? "active-page" : ""}
+              >
+                <Icon
+                  icon="solar:home-smile-angle-outline"
+                  className="menu-icon"
+                />
+                <span>Drivers</span>
+              </Link>
             </li> 
           </ul>
         </div>
