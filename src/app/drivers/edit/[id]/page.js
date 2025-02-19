@@ -2,30 +2,30 @@ import React from "react";
 import { prisma } from "@/lib/prisma";
 import { requireAdminAuth } from "@/hooks/permission";
 import Breadcrumb from "@/components/Breadcrumb";
-import UserForm from "@/components/UserForm";
+import DriverForm from "@/components/DriversForm";
 
 export default async function EditAdmin({ params }) {
-  await requireAdminAuth(["user.manage"]);
+  await requireAdminAuth(["driver.manage"]);
 
   const resolvedParams = await Promise.resolve(params);
   const { id } = resolvedParams;
   
   if (!id) {
-    return <p>Error: user ID is required.</p>;
+    return <p>Error: driver ID is required.</p>;
   }
 
-  const user = await prisma.users.findUnique({
+  const driver = await prisma.drivers.findUnique({
     where: { id: Number(id) },
   });
 
-  if (!user) {
-    return <p>Error: user not found.</p>;
+  if (!driver) {
+    return <p>Error: driver not found.</p>;
   }
 
   return (
     <>
-      <Breadcrumb title="Edit user" />
-      <UserForm user={user} />
+      <Breadcrumb title="Edit driver" />
+      <DriverForm driver={driver} />
     </>
   );
 }

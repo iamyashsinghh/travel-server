@@ -9,7 +9,7 @@ export async function GET(req, { params }) {
     const resolvedParams = await Promise.resolve(params);
     const { mobile } = resolvedParams;
 
-    if (!mobile || isNaN(mobile) || mobile.length !== 10) {
+    if (!mobile || mobile.length !== 10) {
       return NextResponse.json({ error: "Invalid phone number" }, { status: 400 });
     }
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
@@ -18,7 +18,7 @@ export async function GET(req, { params }) {
     
     await prisma.otps.create({
       data: {
-        user_id: parseInt(mobile),
+        user_id: mobile,
         code: otp.toString(),
         type: 'user',
         expires_at: expiresAt,

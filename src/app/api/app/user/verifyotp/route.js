@@ -14,7 +14,7 @@ export async function POST(req) {
     }
 
     const otpRecord = await prisma.otps.findFirst({
-      where: { user_id: parseInt(mobile), code: otp, type: 'user' },
+      where: { user_id: mobile, code: otp, type: 'user' },
       orderBy: { created_at: "desc" },
     });
 
@@ -37,7 +37,7 @@ export async function POST(req) {
     const token = jwt.sign({ id: user.id, mobile: user.mobile }, JWT_SECRET);
 
     // Remove OTP after successful verification
-    await prisma.otps.deleteMany({ where: { user_id: parseInt(mobile) } });
+    await prisma.otps.deleteMany({ where: { user_id: mobile } });
 
     return NextResponse.json({
       success: true,

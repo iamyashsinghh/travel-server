@@ -9,19 +9,23 @@ datasource db {
 }
 
 model admin {
-  id         Int      @id @default(autoincrement())
-  email      String   @unique(map: "Admin_email_key")
+  id         Int           @id @default(autoincrement())
+  email      String        @unique(map: "Admin_email_key")
   password   String
   name       String
-  role       String   @default("admin")
-  created_at DateTime @default(now()) @db.Timestamp(0)
-  updated_at DateTime @default(now()) @db.Timestamp(0)
+  role       String        @default("admin")
+  created_at DateTime      @default(now()) @db.Timestamp(0)
+  updated_at DateTime      @default(now()) @db.Timestamp(0)
+
+  permissions permission[] // Add this relation
 }
 
 model permission {
   id      Int    @id @default(autoincrement())
   name    String
-  adminId Int
+  adminId Int    @map("adminId")
+
+  admin   admin  @relation(fields: [adminId], references: [id], onDelete: Cascade)
 
   @@index([adminId], map: "Permission_adminId_fkey")
 }

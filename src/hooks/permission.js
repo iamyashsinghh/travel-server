@@ -1,3 +1,4 @@
+// src/hooks/permission.js
 import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
@@ -15,11 +16,9 @@ export async function requireAdminAuth(requiredPermissions = []) {
     if (!session || !session.user) {
       console.error("User session not found");
       redirect("/");
-      return; // Stop execution after redirect
     }
 
-    let admin = null;
-
+    let admin;
     if (session.user.id) {
       admin = await prisma.admin.findUnique({
         where: { id: session.user.id },
@@ -33,16 +32,8 @@ export async function requireAdminAuth(requiredPermissions = []) {
     }
 
     if (!admin) {
-      console.error("Admin not found for user:", session.user.email);
+      console.error("Admin not found for user:", session.user);
       redirect("/");
-      return;
-    }
-
-    // Ensure admin data is properly structured
-    if (!admin.permissions || !Array.isArray(admin.permissions)) {
-      console.error("Invalid admin permissions data");
-      redirect("/");
-      return;
     }
 
     // Update session data with admin details
@@ -58,20 +49,15 @@ export async function requireAdminAuth(requiredPermissions = []) {
       const hasAllPermissions = requiredPermissions.every((perm) =>
         userPermissions.includes(perm)
       );
-
       if (!hasAllPermissions) {
-        console.error(
-          `User ${session.user.email} lacks required permissions: ${requiredPermissions.join(", ")}`
-        );
+        console.error("User lacks required permissions:", requiredPermissions);
         redirect("/access-denied");
-        return;
       }
     }
 
     return { session, admin, userPermissions };
   } catch (error) {
-    console.error("Error in requireAdminAuth:", error.message || error);
+    console.error("Error in requireAdminAuth:", error);
     redirect("/");
-    return;
   }
 }

@@ -1,47 +1,46 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAllAdminAuth } from "@/lib/permissions";
-import fs from "fs";
+import fs from "fs/promises";
 import path from "path";
 
-export async function GET(request, { params }) {  
-  if (!(await requireAllAdminAuth(["users.manage"]))) {
+export async function GET(_, context) {
+  if (!(await requireAllAdminAuth(["drivers.manage"]))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const { id } = params;
-    const user = await prisma.users.findUnique({
-      where: { id: Number(id) },
-      include: { permissions: true },
+    const { id } = context.params;
+    const driver = await prisma.drivers.findUnique({
+      where: { id: parseInt(id, 10) },
     });
 
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (!driver) {
+      return NextResponse.json({ error: "Driver not found" }, { status: 404 });
     }
 
-    return NextResponse.json(user);
+    return NextResponse.json(driver);
   } catch (error) {
-    console.error("GET user Error:", error);
-    return NextResponse.json({ error: "Error fetching user" }, { status: 500 });
+    console.error("GET driver Error:", error);
+    return NextResponse.json({ error: "Error fetching driver" }, { status: 500 });
   }
 }
 
-export async function PUT(request, { params }) {
-  if (!(await requireAllAdminAuth(["users.manage"]))) {
+export async function PUT(request, context) {
+  if (!(await requireAllAdminAuth(["drivers.manage"]))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const { id } = params;
+    const { id } = context.params;
     const formData = await request.formData();
     const data = {};
+
     for (const [key, value] of formData.entries()) {
       data[key] = value;
     }
-    console.log("PUT data received:", data);
 
-    const requiredFields = ["name", "email"];
+    const requiredFields = ["name", "email", "mobile", "age"];
     for (const field of requiredFields) {
       if (!data[field]) {
         return NextResponse.json({ error: `Missing required field: ${field}` }, { status: 400 });
@@ -50,58 +49,72 @@ export async function PUT(request, { params }) {
 
     let profilePicturePath = data.profile_picture || "";
     const file = formData.get("profile_picture");
+
     if (file && file.size) {
       const originalName = file.name;
       const extension = originalName.split(".").pop();
       const newFileName = `${Date.now()}.${extension || "jpg"}`;
-      const filePath = path.join("uploads", newFileName);
+      const filePath = path.join("public/uploads", newFileName);
       const buffer = Buffer.from(await file.arrayBuffer());
-      fs.writeFileSync(path.join(process.cwd(), "public", filePath), buffer);
-      profilePicturePath = filePath;
+      await fs.writeFile(filePath, buffer);
+      profilePicturePath = `uploads/${newFileName}`;
     }
 
-    const userId = Number(id);
-    const updatedUser = await prisma.users.update({
-      where: { id: userId },
+    const updatedDriver = await prisma.drivers.update({
+      where: { id: parseInt(id, 10) },
       data: {
-        username: data.username,
         name: data.name,
         email: data.email,
         mobile: data.mobile,
-        gender: data.gender,
+        alt_mobile: data.alt_mobile || "",
+        age: parseInt(data.age, 10),
+        gender: data.gender || "",
+        dob: data.dob || "",
+        current_address: data.current_address || "",
+        address: data.address || "",
         active: data.active === "true" || data.active === true,
-        email_confirmed: data.email_confirmed === "true" || data.email_confirmed === true,
-        mobile_confirmed: data.mobile_confirmed === "true" || data.mobile_confirmed === true,
-        profile_picture: profilePicturePath || data.profile_picture,
+        ...(profilePicturePath && { profile_picture: profilePicturePath }),
       },
     });
 
-    return NextResponse.json(updatedUser);
+    return NextResponse.json(updatedDriver);
   } catch (error) {
-    console.error("PUT user Error Details:", error.message, error.stack);
-    return NextResponse.json(
-      { error: "Error updating user: " + error.message },
-      { status: 500 }
-    );
+    console.error("PUT driver Error:", error.message);
+    return NextResponse.json({ error: "Error updating driver: " + error.message }, { status: 500 });
   }
 }
 
+export async function DELETE(_, context) {
+  if (!(await requireAllAdminAuth(["drivers.delete"]))) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-    export async function DELETE(request, { params }) {
+  try {
+    const { id } = context.params;
+    const driver = await prisma.drivers.findUnique({
+      where: { id: parseInt(id, 10) },
+    });
+
+    if (!driver) {
+      return NextResponse.json({ error: "Driver not found" }, { status: 404 });
+    }
+
+    if (driver.profile_picture) {
+      const filePath = path.join("public", driver.profile_picture);
       try {
-        if (!(await requireAllAdminAuth(["users.delete"]))) {
-          return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-         const user = parseInt(params.id, 10);
-                await prisma.users.delete({
-          where: { id: user },
-        });
-        
-        return NextResponse.json({ success: true });
-      } catch (error) {
-        console.error("DELETE user Error:", error);
-        
-        const errorMessage = error?.message || "Error deleting user";
-        return NextResponse.json({ error: errorMessage }, { status: 500 });
+        await fs.unlink(filePath);
+      } catch (err) {
+        console.warn("Error deleting image:", err.message);
       }
     }
+
+    await prisma.drivers.delete({
+      where: { id: parseInt(id, 10) },
+    });
+
+    return NextResponse.json({ message: "Driver deleted successfully" });
+  } catch (error) {
+    console.error("DELETE driver Error:", error.message);
+    return NextResponse.json({ error: "Error deleting driver: " + error.message }, { status: 500 });
+  }
+}

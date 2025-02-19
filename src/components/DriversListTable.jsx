@@ -70,13 +70,13 @@ const DriversListTable = ({
     <div className="card shadow-sm rounded p-3">
       <div className="card-header bg-white d-flex align-items-center justify-content-between">
         <div className="d-flex">
-          <h4 className="mb-0">User List</h4>
+          <h4 className="mb-0">Drivers List</h4>
           <Link
             href="/drivers/add"
             className="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2 mx-3"
           >
             <Icon icon="ic:baseline-plus" className="icon text-xl line-height-1" />
-            Add New User
+            Add New Driver
           </Link>
         </div>
         <div className="d-flex gap-2">
