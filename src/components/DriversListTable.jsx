@@ -50,10 +50,10 @@ const DriversListTable = ({
     router.push(`/drivers?${query.toString()}`);
   };
 
-  const handleDelete = async (adminId) => {
-    if (window.confirm("Are you sure you want to delete this admin?")) {
+  const handleDelete = async (driverId) => {
+    if (window.confirm("Are you sure you want to delete this driver?")) {
       try {
-        const response = await fetch(`/api/drivers/${adminId}`, {
+        const response = await fetch(`/api/drivers/${driverId}`, {
           method: "DELETE",
         });
         
@@ -101,7 +101,6 @@ const DriversListTable = ({
             <thead className="table-light">
               <tr>
                 <th>S.L</th>
-                <th>Username</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Mobile</th>
@@ -112,31 +111,30 @@ const DriversListTable = ({
             </thead>
             <tbody>
               {drivers.length ? (
-                drivers.map((user, index) => (
-                  <tr key={user.id}>
+                drivers.map((driver, index) => (
+                  <tr key={driver.id}>
                     <td>{(currentPage - 1) * pageSize + index + 1}</td>
-                    <td>{user.username}</td>
-                    <td>{user.name}</td>
-                    <td>{user.email}</td>
-                    <td>{user.mobile}</td>
-                    <td>{user.gender}</td>
-                    <td>{user.active ? "Yes" : "No"}</td>
+                    <td>{driver.name}</td>
+                    <td>{driver.email}</td>
+                    <td>{driver.mobile}</td>
+                    <td>{driver.gender}</td>
+                    <td>{driver.active ? "Yes" : "No"}</td>
                     <td className="text-center">
                       <div className="d-flex gap-2 justify-content-center">
                         <Link
-                          href={`/drivers/view/${user.id}`}
+                          href={`/drivers/view/${driver.id}`}
                           className="bg-info-focus bg-hover-info-200 text-info-600 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
                         >
                           <Icon icon="majesticons:eye-line" className="icon text-xl" />
                         </Link>
                         <Link
-                          href={`/drivers/edit/${user.id}`}
+                          href={`/drivers/edit/${driver.id}`}
                           className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
                         >
                           <Icon icon="lucide:edit" className="menu-icon" />
                         </Link>
                         <button 
-                          onClick={() => handleDelete(user.id)}
+                          onClick={() => handleDelete(driver.id)}
                           className="bg-danger-focus text-danger-600 bg-hover-danger-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle"
                         >
                           <Icon icon="fluent:delete-24-regular" className="fs-5" />

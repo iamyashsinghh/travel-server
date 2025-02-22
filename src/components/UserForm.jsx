@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const generateReferralCode = () => {
   return Math.random().toString(36).substring(2, 10).toUpperCase();
@@ -70,9 +71,13 @@ const UserForm = ({ user }) => {
         body: formData,
       });
       if (response.ok) {
-        router.push("/users");
+        toast.success("User updated successfully!");
+        router.push('/users')
+      } else {
+        toast.error(result.error || "Something went wrong");
       }
     } catch (error) {
+      toast.error(error || "Internal server error");
       console.error("Form submission error:", error);
     }
   };

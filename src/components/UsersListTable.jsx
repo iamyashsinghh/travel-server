@@ -50,10 +50,10 @@ const UsersListTable = ({
     router.push(`/users?${query.toString()}`);
   };
 
-  const handleDelete = async (adminId) => {
-    if (window.confirm("Are you sure you want to delete this admin?")) {
+  const handleDelete = async (userId) => {
+    if (window.confirm("Are you sure you want to delete this user?")) {
       try {
-        const response = await fetch(`/api/users/${adminId}`, {
+        const response = await fetch(`/api/users/${userId}`, {
           method: "DELETE",
         });
         

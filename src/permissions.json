@@ -14,5 +14,29 @@
     {
       "id": "users.delete",
       "name": "Delete Users"
+    },
+    {
+      "id": "vehicle_types.manage",
+      "name": "Manage Vehicle Types"
+    },
+    {
+      "id": "vehicle_types.delete",
+      "name": "Delete Vehicle Types"
+    },
+    {
+      "id": "vehicles.manage",
+      "name": "Manage Vehicles"
+    },
+    {
+      "id": "vehicles.delete",
+      "name": "Delete Vehicles"
+    },
+    {
+      "id": "drivers.manage",
+      "name": "Manage Drivers"
+    },
+    {
+      "id": "drivers.delete",
+      "name": "Delete Drivers"
     }
 ]

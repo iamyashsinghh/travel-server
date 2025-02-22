@@ -156,22 +156,17 @@ const MasterLayout = ({ children }) => {
               </Link>
             </li>
             {/* Admin Dropdown */}
-            <li className="dropdown">
-              <Link href="#">
-                <i className="ri-user-settings-line" />
+            <li>
+              <Link
+                href="/admins"
+                className={pathname === "/admins" ? "active-page" : ""}
+              >
+                <Icon
+                  icon="ri-user-settings-line"
+                  className="menu-icon"
+                />
                 <span>Admin</span>
               </Link>
-              <ul className="sidebar-submenu">
-                <li>
-                  <Link
-                    href="/admins"
-                    className={pathname === "/admins" ? "active-page" : ""}
-                  >
-                    <i className="ri-circle-fill circle-icon text-primary-600 w-auto" />{" "}
-                    List
-                  </Link>
-                </li>
-              </ul>
             </li>
             <li>
               <Link
@@ -179,7 +174,7 @@ const MasterLayout = ({ children }) => {
                 className={pathname === "/users" ? "active-page" : ""}
               >
                 <Icon
-                  icon="solar:home-smile-angle-outline"
+                  icon="ri-user-settings-line"
                   className="menu-icon"
                 />
                 <span>Users</span>
@@ -197,6 +192,35 @@ const MasterLayout = ({ children }) => {
                 <span>Drivers</span>
               </Link>
             </li> 
+            <li className='dropdown'>
+              <Link href='#'>
+                <Icon
+                  icon='solar:home-smile-angle-outline'
+                  className='menu-icon'
+                />
+                <span>Vehicles</span>
+              </Link>
+              <ul className='sidebar-submenu'>
+                <li>
+                  <Link
+                    href='/vehicles'
+                    className={pathname === "/vehicles" ? "active-page" : ""}
+                  >
+                    <i className='ri-circle-fill circle-icon text-primary-600 w-auto' />
+                    Vehicle
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href='/vehicle_types'
+                    className={pathname === "/vehicle_types" ? "active-page" : ""}
+                  >
+                    <i className='ri-circle-fill circle-icon text-warning-main w-auto' />{" "}
+                    Vehicle Types
+                  </Link>
+                </li>
+              </ul>
+            </li>
           </ul>
         </div>
       </aside>

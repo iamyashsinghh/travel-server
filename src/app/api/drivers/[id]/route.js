@@ -47,17 +47,23 @@ export async function PUT(request, context) {
       }
     }
 
-    let profilePicturePath = data.profile_picture || "";
+    let profilePicturePath = null;
     const file = formData.get("profile_picture");
 
-    if (file && file.size) {
+    if (file && file.name) {
       const originalName = file.name;
       const extension = originalName.split(".").pop();
       const newFileName = `${Date.now()}.${extension || "jpg"}`;
       const filePath = path.join("public/uploads", newFileName);
-      const buffer = Buffer.from(await file.arrayBuffer());
-      await fs.writeFile(filePath, buffer);
-      profilePicturePath = `uploads/${newFileName}`;
+
+      try {
+        const buffer = Buffer.from(await file.arrayBuffer());
+        await fs.writeFile(filePath, buffer);
+        profilePicturePath = `uploads/${newFileName}`;
+      } catch (fileError) {
+        console.error("Error saving profile picture:", fileError.message);
+        return NextResponse.json({ error: "Error saving profile picture" }, { status: 500 });
+      }
     }
 
     const updatedDriver = await prisma.drivers.update({
@@ -72,8 +78,7 @@ export async function PUT(request, context) {
         dob: data.dob || "",
         current_address: data.current_address || "",
         address: data.address || "",
-        active: data.active === "true" || data.active === true,
-        ...(profilePicturePath && { profile_picture: profilePicturePath }),
+        ...(profilePicturePath ? { profile_image: profilePicturePath } : {}),
       },
     });
 

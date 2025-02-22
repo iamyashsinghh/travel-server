@@ -1,3 +1,4 @@
+import { Toaster } from "react-hot-toast";
 import "./font.css";
 import "./globals.css";
 import PluginInit from "@/helper/PluginInit";
@@ -10,7 +11,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <PluginInit />
-      <body suppressHydrationWarning={true} >
+      <body suppressHydrationWarning={true}>
+        <Toaster position="top-right" reverseOrder={false} />
         <ConditionalMasterLayout>{children}</ConditionalMasterLayout>
       </body>
     </html>

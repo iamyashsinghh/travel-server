@@ -7,9 +7,6 @@ import roles from "@/roles.json";
 
 const AdminForm = ({ admin }) => {
   const router = useRouter();
-
-  // Initialize the form with default values.
-  // For permissions, use the permission codes from admin.permissions.
   const {
     register,
     handleSubmit,
@@ -25,13 +22,11 @@ const AdminForm = ({ admin }) => {
     },
   });
 
-  // Update form values when the admin prop changes.
   useEffect(() => {
     if (admin) {
       setValue("name", admin.name);
       setValue("email", admin.email);
       setValue("role", admin.role);
-      // Set permissions using the permission codes (stored in admin.permissions.name)
       setValue("permissions", admin.permissions.map((p) => p.name));
     }
   }, [admin, setValue]);
@@ -40,17 +35,19 @@ const AdminForm = ({ admin }) => {
     try {
       const url = admin ? `/api/admins/${admin.id}` : "/api/admins";
       const method = admin ? "PUT" : "POST";
-
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
       if (response.ok) {
-        router.push("/admins");
+        toast.success("Admin updated successfully!");
+        router.push('/admins')
+      } else {
+        toast.error(result.error || "Something went wrong");
       }
     } catch (error) {
+      toast.error(error || "Internal Server Error");
       console.error("Form submission error:", error);
     }
   };
@@ -58,7 +55,6 @@ const AdminForm = ({ admin }) => {
   return (
     <div className="card shadow-sm rounded p-3">
       <form onSubmit={handleSubmit(onSubmit)} className="p-5">
-        {/* Name Field */}
         <div className="mb-3">
           <label className="form-label">Name</label>
           <input
@@ -69,8 +65,6 @@ const AdminForm = ({ admin }) => {
             <div className="invalid-feedback">Name is required</div>
           )}
         </div>
-
-        {/* Email Field */}
         <div className="mb-3">
           <label className="form-label">Email</label>
           <input
@@ -82,8 +76,6 @@ const AdminForm = ({ admin }) => {
             <div className="invalid-feedback">Valid email is required</div>
           )}
         </div>
-
-        {/* Role Selection */}
         <div className="mb-3">
           <label className="form-label">Role</label>
           <select
@@ -100,13 +92,10 @@ const AdminForm = ({ admin }) => {
             <div className="invalid-feedback">Role is required</div>
           )}
         </div>
-
-        {/* Permissions */}
         <div className="mb-3">
           <label className="form-label">Permissions</label>
           <div className="row">
             {permissions.map((perm) => {
-              // perm.id is the permission code from permissions.json (e.g., "admin.manage")
               const permCode = perm.id;
               return (
                 <div className="col-md-4" key={permCode}>
@@ -117,7 +106,6 @@ const AdminForm = ({ admin }) => {
                       {...register("permissions")}
                       className="form-check-input"
                       id={`perm-${permCode}`}
-                      // If editing an admin, check if the permission exists in admin.permissions (by code)
                       defaultChecked={
                         admin
                           ? admin.permissions.some(
@@ -138,8 +126,6 @@ const AdminForm = ({ admin }) => {
             })}
           </div>
         </div>
-
-        {/* Password Field (Only for new admin) */}
         {!admin && (
           <div className="mb-3">
             <label className="form-label">Password</label>
@@ -153,8 +139,6 @@ const AdminForm = ({ admin }) => {
             )}
           </div>
         )}
-
-        {/* Submit Button */}
         <button type="submit" className="btn btn-primary">
           {admin ? "Update Admin" : "Create Admin"}
         </button>

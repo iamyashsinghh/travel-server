@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const generateReferralCode = () => {
   return Math.random().toString(36).substring(2, 10).toUpperCase();
@@ -54,7 +55,7 @@ const DriverForm = ({ driver }) => {
 
   const onSubmit = async (data) => {
     try {
-      const url = driver ? `/api/driver/${driver.id}` : "/api/drivers";
+      const url = driver ? `/api/drivers/${driver.id}` : "/api/drivers";
       const method = driver ? "PUT" : "POST";
       const formData = new FormData();
       for (const key in data) {
@@ -71,9 +72,13 @@ const DriverForm = ({ driver }) => {
         body: formData,
       });
       if (response.ok) {
-        router.push("/drivers");
+        toast.success("Driver updated successfully!");
+        router.push('/drivers')
+      } else {
+        toast.error(result.error || "Something went wrong");
       }
     } catch (error) {
+      toast.error("Internal server error!");
       console.error("Form submission error:", error);
     }
   };
