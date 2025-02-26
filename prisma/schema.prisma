@@ -9,13 +9,13 @@ datasource db {
 }
 
 model admin {
-  id         Int           @id @default(autoincrement())
-  email      String        @unique(map: "Admin_email_key")
+  id         Int      @id @default(autoincrement())
+  email      String   @unique(map: "Admin_email_key")
   password   String
   name       String
-  role       String        @default("admin")
-  created_at DateTime      @default(now()) @db.Timestamp(0)
-  updated_at DateTime      @default(now()) @db.Timestamp(0)
+  role       String   @default("admin")
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  updated_at DateTime @default(now()) @db.Timestamp(0)
 
   permissions permission[] // Add this relation
 }
@@ -25,7 +25,7 @@ model permission {
   name    String
   adminId Int    @map("adminId")
 
-  admin   admin  @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  admin admin @relation(fields: [adminId], references: [id], onDelete: Cascade)
 
   @@index([adminId], map: "Permission_adminId_fkey")
 }
@@ -66,6 +66,8 @@ model users {
   created_at       DateTime        @default(now()) @db.Timestamp(0)
   updated_at       DateTime        @default(now()) @db.Timestamp(0)
   deleted_at       DateTime?       @db.Timestamp(0)
+
+  rides rides[] @relation(name: "UserRides")
 }
 
 model drivers {
@@ -95,31 +97,64 @@ model drivers {
   updated_at       DateTime?         @default(now()) @db.DateTime(0)
   status           String?           @db.VarChar(255)
   created_by       Int
-  vehicles       Vehicle[]
+  vehicles         Vehicle[]
+  rides            rides[]           @relation(name: "RideDriver")
+  assigned_rides   rides[]           @relation(name: "AssignedRideDriver")
 }
 
 model Vehicle_type {
-  id      Int            @id @default(autoincrement())
-  name    String         @unique
-  icon    String?        // URL or file path for the icon image
-  status  vehicle_status @default(start_riding)
-  
+  id     Int            @id @default(autoincrement())
+  name   String         @unique
+  icon   String? // URL or file path for the icon image
+  status vehicle_status @default(start_riding)
+
   vehicles Vehicle[]
 }
 
 model Vehicle {
-  id               Int           @id @default(autoincrement())
-  driver_id        Int
-  vehicle_type_id  Int
-  name             String        // Vehicle name or model
-  image            String?       // Vehicle image (URL or file path)
-  license_plate    String?       // Registration number
-  details          String?       // Additional information (color, model year, etc.)
-  created_at       DateTime      @default(now())
-  updated_at       DateTime      @default(now())
-  
-  driver           drivers       @relation(fields: [driver_id], references: [id])
-  vehicle_type     Vehicle_type  @relation(fields: [vehicle_type_id], references: [id])
+  id              Int      @id @default(autoincrement())
+  driver_id       Int
+  vehicle_type_id Int
+  name            String // Vehicle name or model
+  image           String? // Vehicle image (URL or file path)
+  license_plate   String? // Registration number
+  details         String? // Additional information (color, model year, etc.)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @default(now())
+
+  driver       drivers      @relation(fields: [driver_id], references: [id])
+  vehicle_type Vehicle_type @relation(fields: [vehicle_type_id], references: [id])
+}
+
+model rides {
+  id                 Int         @id @default(autoincrement())
+  user_id            Int
+  driver_id          Int?        @map("driverId") // Nullable for unassigned rides
+  assigned_driver_id Int? // Pre-assigned driver for scheduled rides
+  pickup_lat         Float
+  pickup_lng         Float
+  drop_lat           Float
+  drop_lng           Float
+  fare               Float       @default(0)
+  payment_mode              String?           @db.VarChar(255)
+  distance           Float       @default(0) // Distance in Meter
+  duration           Int         @default(0) // Duration in minutes
+  status             ride_status @default(pending)
+  ride_type          ride_type   @default(standard)
+  scheduled_at       DateTime? // Time for scheduled ride
+  is_scheduled       Boolean     @default(false)
+  created_at         DateTime    @default(now())
+  updated_at         DateTime    @default(now())
+
+  user            users    @relation(fields: [user_id], references: [id], name: "UserRides")
+  driver          drivers? @relation(name: "RideDriver", fields: [driver_id], references: [id])
+  assigned_driver drivers? @relation(name: "AssignedRideDriver", fields: [assigned_driver_id], references: [id])
+}
+
+model zones {
+  id      Int    @id @default(autoincrement())
+  name    String @unique
+  polygon Json // GeoJSON format to store polygon boundaries
 }
 
 enum users_login_by {
@@ -152,4 +187,17 @@ enum vehicle_status {
   start_riding
   coming_soon
   off
+}
+
+enum ride_status {
+  pending
+  accepted
+  ongoing
+  completed
+  canceled
+}
+
+enum ride_type {
+  standard
+  premium
 }
