@@ -106,6 +106,7 @@ model drivers {
 model Vehicle_type {
   id     Int            @id @default(autoincrement())
   name   String         @unique
+  type   String?
   no_of_person Int      @default(4)
   icon   String? // URL or file path for the icon image
   status vehicle_status @default(start_riding)
@@ -139,13 +140,19 @@ model rides {
   drop_lat           Float
   drop_lng           Float
   fare               Float       @default(0)
-  payment_mode              String?           @db.VarChar(255)
+  payment_mode       String?     @db.VarChar(255)
   distance           Float       @default(0) // Distance in Meter
   duration           Int         @default(0) // Duration in minutes
   status             ride_status @default(pending)
   ride_type          ride_type   @default(standard)
+  canceled_by        String?     @db.VarChar(191)
+  canceled_id        Int?        
   scheduled_at       DateTime? // Time for scheduled ride
   is_scheduled       Boolean     @default(false)
+  booked_at          DateTime    @default(now())
+  arived_at          DateTime?
+  start_at           DateTime?
+  drop_at            DateTime?
   created_at         DateTime    @default(now())
   updated_at         DateTime    @default(now())
 
@@ -195,6 +202,7 @@ enum vehicle_status {
 enum ride_status {
   pending
   accepted
+  arrived
   ongoing
   completed
   canceled

@@ -9,7 +9,8 @@ const VehicleTypeForm = ({ vehicleType }) => {
   const [iconPreview, setIconPreview] = useState(vehicleType?.icon ? `/${vehicleType.icon}` : null);
   const { register, handleSubmit, setValue, formState: { errors } } = useForm({
     defaultValues: {
-      name: vehicleType?.name || "",
+      name: vehicleType?.name || "", 
+      type: vehicleType?.type || "", 
       no_of_person: vehicleType?.no_of_person || 4,
       status: vehicleType?.status || "start_riding"
     }
@@ -71,6 +72,13 @@ const VehicleTypeForm = ({ vehicleType }) => {
           <label className="form-label">No Of Person</label>
           <input {...register("no_of_person", { required: true })} className="form-control" />
           {errors.no_of_person && <span className="text-danger">No Of Person is required</span>}
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Type</label>
+          <select {...register("type", { required: true })} className="form-select">
+            <option value="standard">Standard</option>
+            <option value="premium">Premium</option>
+          </select>
         </div>
         <div className="mb-3">
           <label className="form-label">Status</label>

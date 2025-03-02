@@ -64,6 +64,7 @@ export async function PUT(request, context) {
       where: { id: Number(id) },
       data: {
         name: data.name,
+        type: data.type,
         no_of_person: Number(data.no_of_person),
         icon: iconPath ? iconPath : undefined,
         status: data.status || undefined,

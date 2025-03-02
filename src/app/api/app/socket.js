@@ -2,43 +2,25 @@ import { Server } from "socket.io";
 
 export default function handler(req, res) {
     if (!res.socket.server.io) {
-        console.log("Starting Socket.IO server...");
+        console.log("🔌 Setting up Socket.io server...");
+        
         const io = new Server(res.socket.server, {
+            path: "/api/socketio",
             cors: {
                 origin: "*",
+                methods: ["GET", "POST"],
             },
         });
 
-        let onlineDrivers = {};
+        res.socket.server.io = io;
 
         io.on("connection", (socket) => {
-            console.log("A user connected:", socket.id);
-
-            socket.on("driverOnline", (driverId) => {
-                onlineDrivers[driverId] = socket.id;
-                console.log(`Driver ${driverId} is online`);
-            });
-
-            socket.on("bookRide", (rideData) => {
-                console.log("New ride request:", rideData);
-
-                for (let driverId in onlineDrivers) {
-                    io.to(onlineDrivers[driverId]).emit("newRideRequest", rideData);
-                }
-            });
+            console.log(`🚗 Driver Connected: ${socket.id}`);
 
             socket.on("disconnect", () => {
-                console.log("User disconnected:", socket.id);
-                for (let driverId in onlineDrivers) {
-                    if (onlineDrivers[driverId] === socket.id) {
-                        delete onlineDrivers[driverId];
-                        break;
-                    }
-                }
+                console.log(`❌ Driver Disconnected: ${socket.id}`);
             });
         });
-
-        res.socket.server.io = io;
     }
 
     res.end();
