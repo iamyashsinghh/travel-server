@@ -10,6 +10,7 @@ const VehicleTypeForm = ({ vehicleType }) => {
   const { register, handleSubmit, setValue, formState: { errors } } = useForm({
     defaultValues: {
       name: vehicleType?.name || "",
+      no_of_person: vehicleType?.no_of_person || 4,
       status: vehicleType?.status || "start_riding"
     }
   });
@@ -65,6 +66,11 @@ const VehicleTypeForm = ({ vehicleType }) => {
           <label className="form-label">Name</label>
           <input {...register("name", { required: true })} className="form-control" />
           {errors.name && <span className="text-danger">Name is required</span>}
+        </div>
+        <div className="mb-3">
+          <label className="form-label">No Of Person</label>
+          <input {...register("no_of_person", { required: true })} className="form-control" />
+          {errors.no_of_person && <span className="text-danger">No Of Person is required</span>}
         </div>
         <div className="mb-3">
           <label className="form-label">Status</label>

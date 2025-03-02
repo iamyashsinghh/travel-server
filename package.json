@@ -11,7 +11,7 @@
   "dependencies": {
     "@iconify-json/solar": "^1.2.2",
     "@iconify/react": "^5.2.0",
-    "@prisma/client": "^6.3.1",
+    "@prisma/client": "^6.4.1",
     "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
@@ -22,7 +22,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
-    "react-hot-toast": "^2.5.2"
+    "react-hot-toast": "^2.5.2",
+    "socket.io": "^4.8.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

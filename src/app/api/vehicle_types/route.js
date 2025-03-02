@@ -60,6 +60,7 @@ export async function POST(request) {
     const vehicleType = await prisma.vehicle_type.create({
       data: {
         name: data.name,
+        no_of_person: Number(data.no_of_person),
         icon: iconPath,
         status: data.status || "start_riding",
       },

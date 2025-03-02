@@ -73,7 +73,7 @@ model users {
 model drivers {
   id               Int               @id @default(autoincrement())
   name             String            @db.VarChar(255)
-  mobile           String            @db.VarChar(255)
+  mobile           String            @db.VarChar(191) @unique
   current_address  String?           @db.Text
   address          String?           @db.Text
   email            String            @db.VarChar(255)
@@ -95,6 +95,7 @@ model drivers {
   created_at       DateTime?         @default(now()) @db.DateTime(0)
   deleted_at       DateTime?         @db.DateTime(0)
   updated_at       DateTime?         @default(now()) @db.DateTime(0)
+  account_status           String?           @db.VarChar(191)
   status           String?           @db.VarChar(255)
   created_by       Int
   vehicles         Vehicle[]
@@ -105,8 +106,10 @@ model drivers {
 model Vehicle_type {
   id     Int            @id @default(autoincrement())
   name   String         @unique
+  no_of_person Int      @default(4)
   icon   String? // URL or file path for the icon image
   status vehicle_status @default(start_riding)
+  rules  Json
 
   vehicles Vehicle[]
 }

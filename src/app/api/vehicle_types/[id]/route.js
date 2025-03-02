@@ -64,7 +64,7 @@ export async function PUT(request, context) {
       where: { id: Number(id) },
       data: {
         name: data.name,
-        // Only update the icon if a new file was provided; otherwise leave unchanged
+        no_of_person: Number(data.no_of_person),
         icon: iconPath ? iconPath : undefined,
         status: data.status || undefined,
       },

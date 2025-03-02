@@ -14,7 +14,6 @@ const MasterLayout = ({ children }) => {
   const location = usePathname();
   const { adminData } = useMyContext();
 
-  console.log("adminData:", adminData);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
