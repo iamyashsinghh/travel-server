@@ -46,6 +46,7 @@ model users {
   map_type         String?
   email            String?         @unique(map: "users_email_unique") @db.VarChar(150)
   mobile           String          @unique(map: "users_mobile_unique") @db.VarChar(14)
+  socket_id        String?         @db.VarChar(191)
   ride_otp         Int?
   gender           String?
   profile_picture  String?
@@ -78,6 +79,7 @@ model drivers {
   address          String?           @db.Text
   email            String            @db.VarChar(255)
   alt_mobile       String?           @db.VarChar(255)
+  socket_id        String?           @db.VarChar(191)
   gender           drivers_gender?
   age              Int?
   profile_image    String?           @db.VarChar(255)
@@ -153,12 +155,22 @@ model rides {
   arived_at          DateTime?
   start_at           DateTime?
   drop_at            DateTime?
+  attempted_driver_ids Json?
   created_at         DateTime    @default(now())
   updated_at         DateTime    @default(now())
 
   user            users    @relation(fields: [user_id], references: [id], name: "UserRides")
   driver          drivers? @relation(name: "RideDriver", fields: [driver_id], references: [id])
   assigned_driver drivers? @relation(name: "AssignedRideDriver", fields: [assigned_driver_id], references: [id])
+}
+
+model ride_attempt {
+  id        Int      @id @default(autoincrement())
+  ride_id   Int
+  driver_id Int
+  attempted_at DateTime @default(now())
+  
+  @@index([ride_id, driver_id])
 }
 
 model zones {
