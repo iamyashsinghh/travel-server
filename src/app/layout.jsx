@@ -4,7 +4,7 @@ import "./globals.css";
 import PluginInit from "@/helper/PluginInit";
 import ConditionalMasterLayout from "@/masterLayout/ConditionalMasterLayout";
 export const metadata = {
-  title: "Travel App",
+  title: "Irista Cabs",
   description: "Developed by anohim.com",
 };
 export default function RootLayout({ children }) {

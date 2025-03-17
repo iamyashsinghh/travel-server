@@ -135,7 +135,7 @@ model Vehicle {
 model rides {
   id                 Int         @id @default(autoincrement())
   user_id            Int
-  driver_id          Int?        @map("driverId") // Nullable for unassigned rides
+  driver_id          Int?       
   assigned_driver_id Int? // Pre-assigned driver for scheduled rides
   pickup_lat         Float
   pickup_lng         Float
@@ -143,16 +143,23 @@ model rides {
   drop_lng           Float
   fare               Float       @default(0)
   payment_mode       String?     @db.VarChar(255)
+  pickup_address     String?     
+  drop_address       String?
   distance           Float       @default(0) // Distance in Meter
   duration           Int         @default(0) // Duration in minutes
   status             ride_status @default(pending)
   ride_type          ride_type   @default(standard)
-  canceled_by        String?     @db.VarChar(191)
-  canceled_id        Int?        
+  canceled_by        canceller_type?
+  canceled_id        Int?
+  cancel_title       String?     @db.Text // Predefined cancellation reason title
+  cancel_reason      String?     @db.Text // Detailed user-provided cancellation reason
+  cancelled_at       DateTime?
   scheduled_at       DateTime? // Time for scheduled ride
   is_scheduled       Boolean     @default(false)
+  is_rated           Boolean     @default(false)
+  payment_done       Boolean     @default(false)
   booked_at          DateTime    @default(now())
-  arived_at          DateTime?
+  arrived_at         DateTime?
   start_at           DateTime?
   drop_at            DateTime?
   attempted_driver_ids Json?
@@ -170,6 +177,15 @@ model ride_attempt {
   driver_id Int
   attempted_at DateTime @default(now())
   
+  @@index([ride_id, driver_id])
+}
+
+model ride_request_current_driver {
+  id        Int      @id @default(autoincrement())
+  ride_id   Int
+  driver_id Int
+  attempted_at DateTime @default(now())
+
   @@index([ride_id, driver_id])
 }
 
@@ -218,9 +234,34 @@ enum ride_status {
   ongoing
   completed
   canceled
+  no_drivers_available
 }
 
 enum ride_type {
   standard
   premium
+}
+
+enum canceller_type {
+  user
+  driver
+  admin
+  system
+}
+
+model ratings {
+  id         Int      @id @default(autoincrement())
+  ride_id    Int
+  from_type  String   @db.VarChar(10) // "user" or "driver"
+  from_id    Int
+  to_type    String   @db.VarChar(10) // "user" or "driver"
+  to_id      Int
+  rating     Float
+  comment    String?  @db.Text
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  @@index([ride_id])
+  @@index([from_id, from_type])
+  @@index([to_id, to_type])
 }
