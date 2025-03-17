@@ -12,8 +12,8 @@ export default async function VehicleTypesListPage({ searchParams }) {
   const searchQuery = searchParams?.search?.trim() || "";
   const whereClause = searchQuery ? { name: { contains: searchQuery.toLowerCase() } } : {};
 
-  const totalVehicleTypes = await prisma.vehicle_type.count({ where: whereClause });
-  const vehicleTypes = await prisma.vehicle_type.findMany({
+  const totalVehicleTypes = await prisma.vehicle_types.count({ where: whereClause });
+  const vehicleTypes = await prisma.vehicle_types.findMany({
     where: whereClause,
     skip: (currentPage - 1) * pageSize,
     take: pageSize,

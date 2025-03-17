@@ -14,7 +14,7 @@ export default async function EditVehicle({ params }) {
   }
 
   const drivers = await prisma.drivers.findMany({ select: { id: true, name: true } });
-  const vehicleTypes = await prisma.vehicle_type.findMany({ select: { id: true, name: true } });
+  const vehicleTypes = await prisma.vehicle_types.findMany({ select: { id: true, name: true } });
 
   return (
     <>

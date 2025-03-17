@@ -10,7 +10,7 @@ export async function GET(request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   try {
-    const vehicleTypes = await prisma.vehicle_type.findMany({
+    const vehicleTypes = await prisma.vehicle_types.findMany({
       include: { vehicles: true },
     });
     return NextResponse.json(vehicleTypes);
@@ -57,7 +57,7 @@ export async function POST(request) {
       console.log("POST: Icon uploaded, filePath:", iconPath);
     }
 
-    const vehicleType = await prisma.vehicle_type.create({
+    const vehicleType = await prisma.vehicle_types.create({
       data: {
         name: data.name,
         type: data.type,

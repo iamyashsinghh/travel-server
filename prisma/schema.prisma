@@ -100,12 +100,12 @@ model drivers {
   account_status           String?           @db.VarChar(191)
   status           String?           @db.VarChar(255)
   created_by       Int
-  vehicles         Vehicle[]
+  vehicles         vehicle[]
   rides            rides[]           @relation(name: "RideDriver")
   assigned_rides   rides[]           @relation(name: "AssignedRideDriver")
 }
 
-model Vehicle_type {
+model vehicle_types {
   id     Int            @id @default(autoincrement())
   name   String         @unique
   type   String?
@@ -114,22 +114,22 @@ model Vehicle_type {
   status vehicle_status @default(start_riding)
   rules  Json
 
-  vehicles Vehicle[]
+  vehicles vehicle[]
 }
 
-model Vehicle {
+model vehicle {
   id              Int      @id @default(autoincrement())
   driver_id       Int
   vehicle_type_id Int
-  name            String // Vehicle name or model
-  image           String? // Vehicle image (URL or file path)
+  name            String // vehicle name or model
+  image           String? // vehicle image (URL or file path)
   license_plate   String? // Registration number
   details         String? // Additional information (color, model year, etc.)
   created_at      DateTime @default(now())
   updated_at      DateTime @default(now())
 
   driver       drivers      @relation(fields: [driver_id], references: [id])
-  vehicle_type Vehicle_type @relation(fields: [vehicle_type_id], references: [id])
+  vehicle_type vehicle_types @relation(fields: [vehicle_type_id], references: [id])
 }
 
 model rides {

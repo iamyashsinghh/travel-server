@@ -30,7 +30,7 @@ export async function POST(req) {
     const rideHour = rideDateObj.getHours();
     const rideDay = rideDateObj.getDay();
 
-    const vehicleTypes = await prisma.vehicle_type.findMany({
+    const vehicleTypes = await prisma.vehicle_types.findMany({
       where: { status: { in: ["start_riding", "coming_soon"] } }
     });
 

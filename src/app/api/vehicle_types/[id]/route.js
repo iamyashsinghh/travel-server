@@ -12,7 +12,7 @@ export async function GET(request, context) {
   }
   try {
     const id = params.id;
-    const vehicleType = await prisma.vehicle_type.findUnique({
+    const vehicleType = await prisma.vehicle_types.findUnique({
       where: { id: Number(id) },
       include: { vehicles: true },
     });
@@ -60,7 +60,7 @@ export async function PUT(request, context) {
       console.log("PUT: Icon updated, filePath:", iconPath);
     }
 
-    const updatedVehicleType = await prisma.vehicle_type.update({
+    const updatedVehicleType = await prisma.vehicle_types.update({
       where: { id: Number(id) },
       data: {
         name: data.name,
@@ -90,7 +90,7 @@ export async function DELETE(request, context) {
   }
   try {
     const id = params.id;
-    await prisma.vehicle_type.delete({
+    await prisma.vehicle_types.delete({
       where: { id: Number(id) },
     });
     return NextResponse.json({ success: true });
